@@ -1,40 +1,46 @@
 import { observer } from "mobx-react-lite"
-import React, { FC } from "react"
-import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
-import {
-  Text,
-} from "app/components"
-import { isRTL } from "../i18n"
+import React, { FC, useState } from "react"
+import { View, ViewStyle } from "react-native"
+import { Button, Text } from "app/components"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
-import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
-
-const welcomeLogo = require("../../assets/images/logo.png")
-const welcomeFace = require("../../assets/images/welcome-face.png")
+import { FlashList } from "@shopify/flash-list"
+import { useSafeAreaInsetsStyle } from "app/utils/useSafeAreaInsetsStyle"
 
 interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 
-export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeScreen(
-) {
+const tasks = [
+  { id: "1", task: "Buy her flowers" },
+  { id: "2", task: "Plan a date" },
+  { id: "3", task: "Compliment her" },
+  // Add more tasks here
+]
 
-  const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
+export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeScreen() {
+  const $topContainerInsets = useSafeAreaInsetsStyle(["top"])
+  const [taskList, setTaskList] = useState(tasks)
 
   return (
     <View style={$container}>
-      <View style={$topContainer}>
-        <Image style={$welcomeLogo} source={welcomeLogo} resizeMode="contain" />
-        <Text
-          testID="welcome-heading"
-          style={$welcomeHeading}
-          tx="welcomeScreen.readyForLaunch"
-          preset="heading"
+      <View style={[$topContainer, $topContainerInsets]}>
+        <Text preset="subheading" tx="welcomeScreen.welcomeHeader" style={$welcomeHeader} />
+        <Text preset="default" tx="welcomeScreen.todoToday" style={$todoToday} />
+        <FlashList
+          data={taskList}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={$taskItem}>
+              <Text>{item.task}</Text>
+              <Button
+                tx="welcomeScreen.complete"
+                onPress={() => {
+                  /* Mark task as complete */
+                }}
+              />
+            </View>
+          )}
+          estimatedItemSize={200}
         />
-        <Text tx="welcomeScreen.exciting" preset="subheading" />
-        <Image style={$welcomeFace} source={welcomeFace} resizeMode="contain" />
-      </View>
-
-      <View style={[$bottomContainer, $bottomContainerInsets]}>
-        <Text tx="welcomeScreen.postscript" size="md" />
       </View>
     </View>
   )
@@ -42,42 +48,28 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
 
 const $container: ViewStyle = {
   flex: 1,
+  flexGrow: 1,
   backgroundColor: colors.background,
 }
 
 const $topContainer: ViewStyle = {
-  flexShrink: 1,
+  flex: 1,
   flexGrow: 1,
-  flexBasis: "57%",
   justifyContent: "center",
   paddingHorizontal: spacing.lg,
 }
 
-const $bottomContainer: ViewStyle = {
-  flexShrink: 1,
-  flexGrow: 0,
-  flexBasis: "43%",
-  backgroundColor: colors.palette.neutral100,
-  borderTopLeftRadius: 16,
-  borderTopRightRadius: 16,
-  paddingHorizontal: spacing.lg,
-  justifyContent: "space-around",
-}
-const $welcomeLogo: ImageStyle = {
-  height: 88,
-  width: "100%",
-  marginBottom: spacing.xxl,
-}
-
-const $welcomeFace: ImageStyle = {
-  height: 169,
-  width: 269,
-  position: "absolute",
-  bottom: -47,
-  right: -80,
-  transform: [{ scaleX: isRTL ? -1 : 1 }],
-}
-
-const $welcomeHeading: TextStyle = {
+const $welcomeHeader: ViewStyle = {
   marginBottom: spacing.md,
+}
+
+const $todoToday: ViewStyle = {
+  marginBottom: spacing.xs,
+}
+
+const $taskItem: ViewStyle = {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  paddingBottom: spacing.md,
 }

@@ -5,7 +5,7 @@ const en = {
     back: "Back",
   },
   welcomeScreen: {
-    welcomeHeader: "Welcome to HubbyHero!",
+    welcomeHeader: "Welcome to HubbyHero! 🦸‍",
     todoToday: "Here's your ToDo list today:",
     complete: "Complete",
   },
